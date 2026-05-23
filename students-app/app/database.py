@@ -16,11 +16,17 @@ def get_db_connection():
 
 def init_db():
     """Initialize database and create tables if not exist."""
-    conn = get_db_connection()
+    db_name = DB_CONFIG.get("database", "attendance_db")
+
+    # Connect without specifying a database to create the database if it doesn't exist
+    conn_config = DB_CONFIG.copy()
+    conn_config.pop("database", None)
+    
+    conn = mysql.connector.connect(**conn_config)
     cursor = conn.cursor()
 
-    cursor.execute("CREATE DATABASE IF NOT EXISTS attendance_db")
-    cursor.execute("USE attendance_db")
+    cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name}")
+    cursor.execute(f"USE {db_name}")
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS students (
